@@ -3,10 +3,10 @@ app_client/all.min.js
 app_client/all.min.js.map
 
 # Dependency directory
-node_modules123
+node_modules
 bower_components
 .vscode
-.env1234
+.env
 
 # Logs
 logs

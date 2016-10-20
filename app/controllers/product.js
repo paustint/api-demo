@@ -27,7 +27,7 @@ exports.getProducts = function(req, res) {
     sendJson(res, 200, results);
   })
   .catch(err => {
-    sendJson(res, 400, results);
+    sendJson(res, 400, err);
   });
 }
 
@@ -39,7 +39,7 @@ exports.getProduct = function(req, res) {
     sendJson(res, 200, results);
   })
   .catch(err => {
-    sendJson(res, 400, results);
+    sendJson(res, 400, err);
   });
 }
 
@@ -68,12 +68,24 @@ exports.updateProduct = function(req, res) {
   var errors = req.validationErrors();
   if (errors) return sendJson(res, 400, {errors: errors});
 
+  var validParams = ["name","description","sku","price","active"];
+
   var id = req.params.id;
-  var updatedObj = req.body;
+  var updatedParams = {};
+  validParams.forEach(param => {
+    if (req.body[param]) updatedParams[param] = req.body[param];
+  });
 
-  if (updatedObj.isActive === false && !updatedObj.discontinuedDate) updatedObj.discontinuedDate = Date.now();
+  // Make sure at least one valid parameter is included
+  if (Object.keys(updatedParams).length === 0) {
+    return sendJson(res, 400, {errors: `No valid parameters were provided to update.  Valid parameters are: ${validParams.join(', ')}`});
+  }
 
-  updateProduct(id, req.body)
+  // flip on/off discontinued date as appropriate
+  if (updatedParams.active === false && !updatedObj.discontinuedDate) updatedObj.discontinuedDate = Date.now();
+  if (updatedParams.active === true && updatedObj.discontinuedDate) updatedObj.discontinuedDate = null;
+
+  updateProduct(id, updatedParams)
   .then(results => {
     sendJson(res, 203, results);
   })
@@ -87,6 +99,7 @@ exports.deleteProduct = function(req, res) {
   // todo implement validator
   getProductById(id)
   .then(results => {
+    if (!results) return sendJson(res, 400, {errors: 'Record could not be found with provided id'});
     results.remove(err => {
       if (err) return sendJson(res, 400, results);
       sendJson(res, 204, {message: "Deleted sucessfully"});

@@ -24,24 +24,24 @@ var sendJson = function(res, status, content) {
 };
 
 exports.getOrders = function(req, res) {
-  getOrders()
+  getOrders({}, req.query.full)
   .then(results => {
     sendJson(res, 200, results);
   })
   .catch(err => {
-    sendJson(res, 400, results);
+    sendJson(res, 400, err);
   });
 }
 
 exports.getOrder = function(req, res) {
   var id = req.params.id;
 
-  getOrderById(id)
+  getOrderById(id, req.query.full)
   .then(results => {
     sendJson(res, 200, results);
   })
   .catch(err => {
-    sendJson(res, 400, results);
+    sendJson(res, 400, err);
   });
 }
 
@@ -52,19 +52,16 @@ exports.createOrder = function(req, res) {
   var errors = req.validationErrors();
   if (errors) return sendJson(res, 400, {errors: errors});
 
-  // make sure products is an array
-  if (!Array.isArray(req.body.products)) req.body.products = [req.body.products];
-
-  var obj = new Order(req.body);
-
-  // figure out total
-  getTotal(req.body.products)
-  .then(total => {
-    obj.total = total;
+  // set prices and prepare data
+  setProductPrices(req.body)
+  .then(orderObj => {
+    var obj = new Order(orderObj);
+    console.log('orderObj', orderObj);
+    console.log('obj', obj);
     obj.save(err => {
       if (err) return sendJson(res, 400, err);
       sendJson(res, 201, obj);
-    })
+    });
   })
   .catch(err => {
     sendJson(res, 400, err);
@@ -73,17 +70,25 @@ exports.createOrder = function(req, res) {
 }
 
 exports.updateOrder = function(req, res) {
-  req.checkBody('price', 'Price must be a positive number').isPositive();
+  req.checkBody('shipped', 'Shipped must be a boolean').optional().isBoolean();
 
   var errors = req.validationErrors();
   if (errors) return sendJson(res, 400, {errors: errors});
 
+  var validParams = ['shipped', 'notes', 'status'];
+
   var id = req.params.id;
-  var updatedObj = req.body;
+  var updatedParams = {};
+  validParams.forEach(param => {
+    if (req.body[param]) updatedParams[param] = req.body[param];
+  });
 
-  if (updatedObj.isActive === false && !updatedObj.discontinuedDate) updatedObj.discontinuedDate = Date.now();
+  // Make sure at least one valid parameter is included
+  if (Object.keys(updatedParams).length === 0) {
+    return sendJson(res, 400, {errors: `No valid parameters were provided to update.  Valid parameters are: ${validParams.join(', ')}`});
+  }
 
-  updateOrder(id, req.body)
+  updateOrder(id, updatedParams)
   .then(results => {
     sendJson(res, 203, results);
   })
@@ -97,6 +102,7 @@ exports.deleteOrder = function(req, res) {
   // todo implement validator
   getOrderById(id)
   .then(results => {
+    if (!results) return sendJson(res, 400, {errors: 'Record could not be found with provided id'});
     results.remove(err => {
       if (err) return sendJson(res, 400, results);
       sendJson(res, 204, {message: "Deleted sucessfully"});
@@ -107,23 +113,30 @@ exports.deleteOrder = function(req, res) {
   });
 }
 
-function getOrderById(id) {
+
+/////////// QUERY FUNCTIONS /////////////////
+
+function getOrderById(id, populateSubDocs) {
   return new Promise((resolve, reject) => {
-    Order.findById(id, (err, results) => {
+    var q = Order.findById(id);
+    q = populate(q, populateSubDocs);
+    q.exec((err, results) => {
       if (err) return reject({error: err.message});
       resolve(results);
     });
   })
 }
 
-function getOrders(query) {
+function getOrders(query, populateSubDocs) {
   query = query || {};
   return new Promise((resolve, reject) => {
-    Order.find(query, (err, results) => {
+    var q = Order.find(query);
+    q = populate(q, populateSubDocs);
+    q.exec((err, results) => {
       if (err) return reject({error: err.message});
       resolve(results);
     });
-  })
+  });
 }
 
 function updateOrder(id, updateParams) {
@@ -137,33 +150,60 @@ function updateOrder(id, updateParams) {
   })
 }
 
-function getTotal(products) {
+///////// HELPER FUNCTIONS ////////////
+
+function populate(query, populateSubDocs) {
+  try {
+    populateSubDocs = populateSubDocs.toLowerCase();
+    if (populateSubDocs.startsWith('t')) {
+      query
+      .populate({ path: 'customer' })
+      .populate({
+        path: 'products.product',
+        model: 'Product'
+      });
+    }
+    return query;
+  } catch (ex) {
+    return query;
+  }
+}
+
+function setProductPrices(order) {
   return new Promise((resolve, reject) => {
-    var query = Product.find({});
-    query
-    .where('_id').in(products)
+    var productPrices = {}; // {'123': {product obj}}
+    var productIds = order.products.map(p => {
+      return p.product;
+    });
+    Product.find({})
+    .where('_id').in(productIds)
     // .where('active', true)
     .exec((err, results) => {
       if (err) return reject({error: err.message});
       // Check to make sure order ids provided were found in catalog
-      var returnedIds = [];
-      var invalidIds = [];
-      
-      results.forEach(result => {
-        returnedIds.push(result.id);
+      // Save all returned product id's and prices'
+      results.map(p => {
+        productPrices[p._id] = p;
       });
-      products.forEach(product => {
-        if (!returnedIds.includes(product)) invalidIds.push(product);
+      order.total = 0;
+      order.products.forEach(p => {
+        if (productPrices[p.product]) {
+          p.originalPrice = productPrices[p.product].price;
+          order.total += p.originalPrice;
+          // Set customer price if needed and determine if price overrice was specified
+          if (p.customerPrice != 0 && !p.customerPrice) {
+            p.customerPrice = p.originalPrice;
+            p.priceOverride = false;
+          } else if (p.customerPrice != p.originalPrice) {
+            p.priceOverride = true;
+          } else {
+            p.priceOverride = false;
+          }
+        } else {
+          return reject({error: 'One or more provided products do not exist in catalog'});
+        }
       });
-
-      if (invalidIds.length > 0) return reject({invalidProducts: invalidIds});
-
-      // calculate total if all product ids were found
-      var total = 0;
-      results.forEach(result => {
-        total += result.price;
-      });
-      resolve(total);
+      resolve(order);
     });
   })
 }

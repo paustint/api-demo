@@ -6,13 +6,21 @@ var schemaOptions = {
 
 var orderSchema = new mongoose.Schema({
   customer: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer'},
-  products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product'}],
+  products: [{
+    _id: false,
+    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product'},
+    quantity: { type: Number, default: 1 },
+    originalPrice: { type: Number },
+    customerPrice: { type: Number },
+    priceOverride: { Type: Boolean, default: false },
+    notes: { Type: String }
+  }],
   notes: String,
   status: { type: String, default: "Created, Not Shipped" },
   orderDate: { type: Date },
-  shippedDate: { type: Date, default: Date.now },
+  shippedDate: { type: Date, default: null },
   shipped: { type: Boolean, default: false },
-  total: {Type: Number, default: 0.00 },
+  total: {type: Number, default: 0.00 },
   createdBy: { type: String }
 }, schemaOptions);
 

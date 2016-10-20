@@ -64,13 +64,26 @@ exports.updateCustomer = function(req, res) {
   
   var errors = req.validationErrors();
   if (errors) return sendJson(res, 400, {errors: errors});  
-  
+
+  var validParams = ["firstName","lastName","email","phone"];
+
   var id = req.params.id;
-  updateCustomer(id, req.body)
+  var updatedParams = {};
+  validParams.forEach(param => {
+    if (req.body[param]) updatedParams[param] = req.body[param];
+  });
+
+  // Make sure at least one valid parameter is included
+  if (Object.keys(updatedParams).length === 0) {
+    return sendJson(res, 400, {errors: `No valid parameters were provided to update.  Valid parameters are: ${validParams.join(', ')}`});
+  }
+
+  updateCustomer(id, updatedParams)
   .then(results => {
     sendJson(res, 203, results);
   })
   .catch(err => {
+    if (!results) return sendJson(res, 400, {errors: 'Record could not be found with provided id'});
     sendJson(res, 400, err);
   });
 }
@@ -80,6 +93,7 @@ exports.deleteCustomer = function(req, res) {
   // todo implement validator
   getCustomerById(id)
   .then(results => {
+    if (!results) return sendJson(res, 400, {errors: 'Record could not be found with provided id'});
     results.remove(err => {
       if (err) return sendJson(res, 400, results);
       sendJson(res, 204, {message: "Deleted sucessfully"});

@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "heroku": "npm build && npm start",
-    "postinstall": "npm run build",
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "heroku": "npm start",
+    "start": "node server.js"
   },
   "dependencies": {
     "express-validator": "^2.20.4",

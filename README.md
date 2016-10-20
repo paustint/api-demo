@@ -2,7 +2,7 @@
 
 This program is product for an hands-on demo to give folks an idea of what working with API's is all about.
 
-Valid Endpoints:
+## Valid Endpoints:
   get '/customer'
   get '/customer/:id'
   post '/customer'
@@ -21,9 +21,10 @@ Valid Endpoints:
   put '/order/:id'
   delete '/order/:id'
 
-Data Models:
-  Customer:
+## Data Models:
+  **Customer**:
     post:
+    ```javascript
     {
       "firstName": "",
       "lastName": "",
@@ -31,15 +32,19 @@ Data Models:
       "phone": "",
       "createdBy": ""
     }
-    Put:
+    ```
+    _put_:
+    ```javascript
     {
       "firstName": "",
       "lastName": "",
       "email": "",
       "phone": ""
     }
-  Product:
-    post:
+    ```
+  **Product**:
+    _post_:
+    ```javascript
     {
       "name": "",
       "description": "",
@@ -48,7 +53,9 @@ Data Models:
       "active": true,
       "createdBy": ""
     }
-    Put:
+    ```
+    _put_:
+    ```javascript
     {
       "name": "",
       "description": "",
@@ -56,8 +63,10 @@ Data Models:
       "price": 12.33,
       "active": false
     }
-  Order:
-    post:
+    ```
+  **Order**:
+    _post_:
+    ```javascript
     {
       "customer": "5806e2a1759fd9ad7a1f60eb",
       "products": [{
@@ -68,9 +77,12 @@ Data Models:
       "notes": "some optional order notes",
       "createdBy": "test"
     }
+    ```
     put:
+    ```javascript
     {
       "shipped": true,
       "notes": "updated notes",
       "status": "some status"
     }
+    ```

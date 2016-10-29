@@ -3,11 +3,35 @@
 
   var express = require('express');
   var router = express.Router();
+  // Models
+  var ApiLog = require('./models/ApiLog');
 
   // Controllers
   var CustomerController = require('./controllers/customer');
   var ProductController = require('./controllers/product');
   var OrderController = require('./controllers/order');
+  var ApiLogController = require('./controllers/apiLog');
+
+/////////////// MIDDLEWARE ///////////////////////////////////
+
+router.use(function (req, res, next) {
+  var apiLog = new ApiLog();
+  apiLog.baseUrl = req.baseUrl;
+  apiLog.url = req.originalUrl;
+  apiLog.headers = req.headers;
+  apiLog.httpMethod = req.method;
+  apiLog.params = req.params;
+  apiLog.body = req.body;
+  apiLog.query = req.query;
+  apiLog.callingIp = req.connection.remoteAddress;
+  apiLog.startTime = Date.now();
+
+  req.apiLog = apiLog;
+
+  next();
+});
+
+
 /////////////// ROUTES ///////////////////////////////////
   
   
@@ -49,6 +73,11 @@
   router.post('/:user/order', OrderController.createOrder);
   router.put('/:user/order/:id', OrderController.updateOrder);
   router.delete('/:user/order/:id', OrderController.deleteOrder);
+
+  /// STATS
+  router.get('/:user/apiLog', ApiLogController.getApiLogs);
+  router.get('/apiLog', ApiLogController.getApiLogs);
+
 
   module.exports = router;
 

@@ -2,6 +2,7 @@ var moment = require('moment');
 var expressValidator = require('express-validator');
 
 var Product = require('../models/product');
+var responseHelper = require('../services/responseHelper');
 
 /**
  * 200 - OK success GET

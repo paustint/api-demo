@@ -37,7 +37,10 @@ app.use(expressValidator({
     }
   }
 }));
-
+app.use(function (req, res, next) {
+  console.log('route called: ' + req.originalUrl);
+  next();
+});
 app.use('/api', routes);
 
 app.get('/', function(req, res){

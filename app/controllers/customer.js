@@ -2,6 +2,7 @@ var moment = require('moment');
 var expressValidator = require('express-validator');
 
 var Customer = require('../models/customer');
+var responseHelper = require('../services/responseHelper');
 
 /**
  * 200 - OK success GET
@@ -15,19 +16,19 @@ var Customer = require('../models/customer');
  * 405 method not allowed
  */
 
-var sendJson = function(res, status, content) {
-      content = content || {};
-      res.status(status);
-      return res.json(content);
-};
+// var sendJ1son = function(res, status, content) {
+//       content = content || {};
+//       res.status(status);
+//       return res.json(content);
+// };
 
 exports.getCustomers = function(req, res) {
   getCustomers(null, req.params.user)
   .then(results => {
-    sendJson(res, 200, results);
+    responseHelper.sendJson(req, res, 200, results);
   })
   .catch(err => {
-    sendJson(res, 400, results);
+    responseHelper.sendJson(req, res, 400, results);
   });
 }
 
@@ -36,10 +37,10 @@ exports.getCustomer = function(req, res) {
 
   getCustomerById(id, req.params.user)
   .then(results => {
-    sendJson(res, 200, results);
+    responseHelper.sendJson(req, res, 200, results);
   })
   .catch(err => {
-    sendJson(res, 400, results);
+    responseHelper.sendJson(req, res, 400, results);
   });
 }
 
@@ -50,13 +51,13 @@ exports.createCustomer = function(req, res) {
   req.checkBody('email', 'Email must be proper format').isEmail();
   
   var errors = req.validationErrors();
-  if (errors) return sendJson(res, 400, {errors: errors});
+  if (errors) return responseHelper.sendJson(req, res, 400, {errors: errors});
 
   var obj = new Customer(req.body);
   if (req.params.user) obj.user = req.params.user;
   obj.save(err => {
-    if (err) return sendJson(res, 400, err.message);
-    sendJson(res, 201, obj);
+    if (err) return responseHelper.sendJson(req, res, 400, err.message);
+    responseHelper.sendJson(req, res, 201, obj);
   })
 }
 
@@ -64,7 +65,7 @@ exports.updateCustomer = function(req, res) {
   req.checkBody('email', 'Email must be proper format').optional().isEmail();
   
   var errors = req.validationErrors();
-  if (errors) return sendJson(res, 400, {errors: errors});  
+  if (errors) return responseHelper.sendJson(req, res, 400, {errors: errors});  
 
   var validParams = ["firstName","lastName","email","phone"];
 
@@ -76,16 +77,16 @@ exports.updateCustomer = function(req, res) {
 
   // Make sure at least one valid parameter is included
   if (Object.keys(updatedParams).length === 0) {
-    return sendJson(res, 400, {errors: `No valid parameters were provided to update.  Valid parameters are: ${validParams.join(', ')}`});
+    return responseHelper.sendJson(req, res, 400, {errors: `No valid parameters were provided to update.  Valid parameters are: ${validParams.join(', ')}`});
   }
 
   updateCustomer(id, updatedParams)
   .then(results => {
-    sendJson(res, 203, results);
+    responseHelper.sendJson(req, res, 203, results);
   })
   .catch(err => {
-    if (!results) return sendJson(res, 400, {errors: 'Record could not be found with provided id'});
-    sendJson(res, 400, err);
+    if (!results) return responseHelper.sendJson(req, res, 400, {errors: 'Record could not be found with provided id'});
+    responseHelper.sendJson(req, res, 400, err);
   });
 }
 
@@ -94,14 +95,14 @@ exports.deleteCustomer = function(req, res) {
   // todo implement validator
   getCustomerById(id, req.params.user)
   .then(results => {
-    if (!results) return sendJson(res, 400, {errors: 'Record could not be found with provided id'});
+    if (!results) return responseHelper.sendJson(req, res, 400, {errors: 'Record could not be found with provided id'});
     results.remove(err => {
-      if (err) return sendJson(res, 400, results);
-      sendJson(res, 204, {message: "Deleted sucessfully"});
+      if (err) return responseHelper.sendJson(req, res, 400, results);
+      responseHelper.sendJson(req, res, 204, {message: "Deleted sucessfully"});
     });
   })
   .catch(err => {
-    sendJson(res, 400, err);
+    responseHelper.sendJson(req, res, 400, err);
   });
 }
 

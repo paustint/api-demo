@@ -257,8 +257,7 @@
                 </div>
                 <div id="customer-model" class="panel-collapse collapse in" role="tabpanel">
                     <div class="panel-body">              
-<pre>  
-firstName: String
+<pre>firstName: String
 lastName: String
 email: String
 phone: String
@@ -280,8 +279,7 @@ user: String (set by {name} parameter)
                 </div>
                 <div id="product-model" class="panel-collapse collapse in" role="tabpanel">
                     <div class="panel-body">              
-<pre>  
-name: String
+<pre>name: String
 description: String
 sku: String, unique: true
 price: Number
@@ -303,8 +301,7 @@ user: String (set by {name} parameter)
                 </div>
                 <div id="order-model" class="panel-collapse collapse in" role="tabpanel">
                     <div class="panel-body">              
-<pre>  
-customer: ObjectId, ref: Customer
+<pre>customer: ObjectId, ref: Customer
 products: [{
     product: ObjectId, ref: Product
     quantity: Number, default: 1

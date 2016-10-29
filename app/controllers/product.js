@@ -22,7 +22,7 @@ var sendJson = function(res, status, content) {
 };
 
 exports.getProducts = function(req, res) {
-  getProducts()
+  getProducts(null, req.params.user)
   .then(results => {
     sendJson(res, 200, results);
   })
@@ -34,7 +34,7 @@ exports.getProducts = function(req, res) {
 exports.getProduct = function(req, res) {
   var id = req.params.id;
 
-  getProductById(id)
+  getProductById(id, req.params.user)
   .then(results => {
     sendJson(res, 200, results);
   })
@@ -55,7 +55,7 @@ exports.createProduct = function(req, res) {
   if (errors) return sendJson(res, 400, {errors: errors});
 
   var obj = new Product(req.body);
-
+  if (req.params.user) obj.user = req.params.user;
   obj.save(err => {
     if (err) return sendJson(res, 400, err.message);
     sendJson(res, 201, obj);
@@ -97,7 +97,7 @@ exports.updateProduct = function(req, res) {
 exports.deleteProduct = function(req, res) {
   var id = req.params.id;
   // todo implement validator
-  getProductById(id)
+  getProductById(id, req.params.user)
   .then(results => {
     if (!results) return sendJson(res, 400, {errors: 'Record could not be found with provided id'});
     results.remove(err => {
@@ -110,17 +110,20 @@ exports.deleteProduct = function(req, res) {
   });
 }
 
-function getProductById(id) {
+function getProductById(id, user) {
   return new Promise((resolve, reject) => {
-    Product.findById(id, (err, results) => {
+    var query = {_id: id};
+    if (user) query.user = user;
+    Product.find(query, (err, results) => {
       if (err) return reject({error: err.message});
       resolve(results);
     });
   })
 }
 
-function getProducts(query) {
+function getProducts(query, user) {
   query = query || {};
+  if (user) query.user = user;
   return new Promise((resolve, reject) => {
     Product.find(query, (err, results) => {
       if (err) return reject({error: err.message});
@@ -129,7 +132,7 @@ function getProducts(query) {
   })
 }
 
-function updateProduct(id, updateParams) {
+function updateProduct(id, updateParams, user) {
   return new Promise((resolve, reject) => {
     Product.findByIdAndUpdate(id, updateParams, (err) => {
       if (err) return reject({error: err.message});

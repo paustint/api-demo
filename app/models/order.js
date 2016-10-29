@@ -21,7 +21,8 @@ var orderSchema = new mongoose.Schema({
   shippedDate: { type: Date, default: null },
   shipped: { type: Boolean, default: false },
   total: {type: Number, default: 0.00 },
-  createdBy: { type: String }
+  createdBy: { type: String },
+  user: { type: String }
 }, schemaOptions);
 
 module.exports = mongoose.model('Order', orderSchema);

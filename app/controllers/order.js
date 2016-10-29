@@ -24,7 +24,7 @@ var sendJson = function(res, status, content) {
 };
 
 exports.getOrders = function(req, res) {
-  getOrders({}, req.query.full)
+  getOrders({}, req.query.full, req.params.user)
   .then(results => {
     sendJson(res, 200, results);
   })
@@ -36,7 +36,7 @@ exports.getOrders = function(req, res) {
 exports.getOrder = function(req, res) {
   var id = req.params.id;
 
-  getOrderById(id, req.query.full)
+  getOrderById(id, req.query.full, req.params.user)
   .then(results => {
     sendJson(res, 200, results);
   })
@@ -56,6 +56,7 @@ exports.createOrder = function(req, res) {
   setProductPrices(req.body)
   .then(orderObj => {
     var obj = new Order(orderObj);
+    if (req.params.user) obj.user = req.params.user;
     console.log('orderObj', orderObj);
     console.log('obj', obj);
     obj.save(err => {
@@ -100,7 +101,7 @@ exports.updateOrder = function(req, res) {
 exports.deleteOrder = function(req, res) {
   var id = req.params.id;
   // todo implement validator
-  getOrderById(id)
+  getOrderById(id, req.params.user)
   .then(results => {
     if (!results) return sendJson(res, 400, {errors: 'Record could not be found with provided id'});
     results.remove(err => {
@@ -116,9 +117,11 @@ exports.deleteOrder = function(req, res) {
 
 /////////// QUERY FUNCTIONS /////////////////
 
-function getOrderById(id, populateSubDocs) {
+function getOrderById(id, populateSubDocs, user) {
   return new Promise((resolve, reject) => {
-    var q = Order.findById(id);
+    var query = {_id: id};
+    if (user) query.user = user;
+    var q = Order.findOne(query);
     q = populate(q, populateSubDocs);
     q.exec((err, results) => {
       if (err) return reject({error: err.message});
@@ -127,8 +130,9 @@ function getOrderById(id, populateSubDocs) {
   })
 }
 
-function getOrders(query, populateSubDocs) {
+function getOrders(query, populateSubDocs, user) {
   query = query || {};
+  if (user) query.user = user;
   return new Promise((resolve, reject) => {
     var q = Order.find(query);
     q = populate(q, populateSubDocs);
@@ -139,7 +143,7 @@ function getOrders(query, populateSubDocs) {
   });
 }
 
-function updateOrder(id, updateParams) {
+function updateOrder(id, updateParams, user) {
   return new Promise((resolve, reject) => {
     Order.findByIdAndUpdate(id, updateParams, (err) => {
       if (err) return reject({error: err.message});

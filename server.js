@@ -28,6 +28,7 @@ app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'node_modules')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(expressValidator({
   customValidators: {
@@ -38,6 +39,10 @@ app.use(expressValidator({
 }));
 
 app.use('/api', routes);
+
+app.get('/', function(req, res){
+  res.sendfile('./index.html');
+});
 
 app.use(function(req, res, next) {
   res.status(404);

@@ -9,7 +9,8 @@ var customerSchema = new mongoose.Schema({
   lastName: String,
   email: String,
   phone: String,
-  createdBy: { type: String }
+  createdBy: { type: String },
+  user: { type: String }
 }, schemaOptions);
 
 module.exports = mongoose.model('Customer', customerSchema);

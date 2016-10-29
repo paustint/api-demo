@@ -22,7 +22,7 @@ var sendJson = function(res, status, content) {
 };
 
 exports.getCustomers = function(req, res) {
-  getCustomers()
+  getCustomers(null, req.params.user)
   .then(results => {
     sendJson(res, 200, results);
   })
@@ -34,7 +34,7 @@ exports.getCustomers = function(req, res) {
 exports.getCustomer = function(req, res) {
   var id = req.params.id;
 
-  getCustomerById(id)
+  getCustomerById(id, req.params.user)
   .then(results => {
     sendJson(res, 200, results);
   })
@@ -53,6 +53,7 @@ exports.createCustomer = function(req, res) {
   if (errors) return sendJson(res, 400, {errors: errors});
 
   var obj = new Customer(req.body);
+  if (req.params.user) obj.user = req.params.user;
   obj.save(err => {
     if (err) return sendJson(res, 400, err.message);
     sendJson(res, 201, obj);
@@ -91,7 +92,7 @@ exports.updateCustomer = function(req, res) {
 exports.deleteCustomer = function(req, res) {
   var id = req.params.id;
   // todo implement validator
-  getCustomerById(id)
+  getCustomerById(id, req.params.user)
   .then(results => {
     if (!results) return sendJson(res, 400, {errors: 'Record could not be found with provided id'});
     results.remove(err => {
@@ -104,17 +105,20 @@ exports.deleteCustomer = function(req, res) {
   });
 }
 
-function getCustomerById(id) {
+function getCustomerById(id, user) {
   return new Promise((resolve, reject) => {
-    Customer.findById(id, (err, results) => {
+    var query = {_id: id};
+    if (user) query.user = user;
+    Customer.find(query, (err, results) => {
       if (err) return reject({error: err.message});
       resolve(results);
     });
   })
 }
 
-function getCustomers(query) {
+function getCustomers(query, user) {
   query = query || {};
+  if (user) query.user = user;
   return new Promise((resolve, reject) => {
     Customer.find(query, (err, results) => {
       if (err) return reject({error: err.message});
@@ -133,3 +137,4 @@ function updateCustomer(id, updateParams) {
     });
   })
 }
+

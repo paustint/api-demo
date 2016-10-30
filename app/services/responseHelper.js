@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  var ApiLog = require('../models/ApiLog');
+  var ApiLog = require('../models/apiLog');
 
   exports.sendJson = function(req, res, status, content) {
       content = content || {};

@@ -77,7 +77,7 @@ exports.updateOrder = function(req, res) {
   var errors = req.validationErrors();
   if (errors) return sendJson(res, 400, {errors: errors});
 
-  var validParams = ['shipped', 'notes', 'status'];
+  var validParams = ['shipped', 'notes', 'status', 'orderCancelled'];
 
   var id = req.params.id;
   var updatedParams = {};
@@ -89,7 +89,13 @@ exports.updateOrder = function(req, res) {
   if (Object.keys(updatedParams).length === 0) {
     return sendJson(res, 400, {errors: `No valid parameters were provided to update.  Valid parameters are: ${validParams.join(', ')}`});
   }
-
+  if (updatedParams.shipped) updatedParams.shippedDate = Date.now();
+  if (updatedParams.shipped && !updatedParams.status) updatedParams.status = 'Order has been shipped';
+  if (updatedParams.orderCancelled) {
+    updatedParams.status = "Order cancelled";
+  } else if (updatedParams.orderCancelled === false) {
+    updatedParams.status = "Order reinstated";
+  }
   updateOrder(id, updatedParams)
   .then(results => {
     sendJson(res, 203, results);
@@ -208,8 +214,10 @@ function setProductPrices(order) {
       order.total = 0;
       order.products.forEach(p => {
         if (productPrices[p.product]) {
+          p.quantity = p.quantity || 1;
+          p.quantity = Number.parseFloat(p.quantity.toFixed(0));
           p.originalPrice = productPrices[p.product].price;
-          order.total += p.originalPrice;
+          
           // Set customer price if needed and determine if price overrice was specified
           if (p.customerPrice != 0 && !p.customerPrice) {
             p.customerPrice = p.originalPrice;
@@ -219,6 +227,10 @@ function setProductPrices(order) {
           } else {
             p.priceOverride = false;
           }
+          p.originalPrice = Number.parseFloat(p.originalPrice.toFixed(2));
+          p.customerPrice = Number.parseFloat(p.customerPrice.toFixed(2));
+          p.extendedPrice = Number.parseFloat((p.quantity * p.customerPrice).toFixed(2));
+          order.total += p.extendedPrice;
         } else {
           return reject({error: 'One or more provided products do not exist in catalog'});
         }
@@ -227,3 +239,4 @@ function setProductPrices(order) {
     });
   })
 }
+

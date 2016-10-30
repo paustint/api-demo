@@ -4,13 +4,13 @@
   var express = require('express');
   var router = express.Router();
   // Models
-  var ApiLog = require('./models/apiLog');
+  var ApiLog = require('../models/apiLog');
 
   // Controllers
-  var CustomerController = require('./controllers/customer');
-  var ProductController = require('./controllers/product');
-  var OrderController = require('./controllers/order');
-  var ApiLogController = require('./controllers/apiLog');
+  var CustomerController = require('../controllers/customer');
+  var ProductController = require('../controllers/product');
+  var OrderController = require('../controllers/order');
+  var ApiLogController = require('../controllers/apiLog');
 
 /////////////// MIDDLEWARE ///////////////////////////////////
 

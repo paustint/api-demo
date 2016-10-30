@@ -12,15 +12,17 @@ var orderSchema = new mongoose.Schema({
     quantity: { type: Number, default: 1 },
     originalPrice: { type: Number },
     customerPrice: { type: Number },
-    priceOverride: { Type: Boolean, default: false },
-    notes: { Type: String }
+    extendedPrice: { type: Number },
+    priceOverride: { type: Boolean, default: false },
+    notes: { type: String }
   }],
   notes: String,
   status: { type: String, default: "Created, Not Shipped" },
   orderDate: { type: Date },
   shippedDate: { type: Date, default: null },
   shipped: { type: Boolean, default: false },
-  total: {type: Number, default: 0.00 },
+  total: { type: Number, default: 0.00 },
+  orderCancelled: { type: Boolean, default: false },
   createdBy: { type: String },
   user: { type: String }
 }, schemaOptions);

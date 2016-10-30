@@ -1,0 +1,53 @@
+<p class="lead" style="padding-top: 10px; padding-bottom: 10px">
+    {{{dataModels.heading}}}
+</p>
+<!--Customer API-->
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    {{#each dataModels.models}}
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#{{id}}" aria-expanded="true" aria-controls="{{id}}">
+                    <h3 class="panel-title">{{title}}</h3>
+                </a>
+            </div>
+            <div id="{{id}}" class="panel-collapse collapse in" role="tabpanel">
+                <div class="panel-body">
+                    <ul class="list-group">
+                        {{#each list}}
+                            <li class="list-group-item">
+                              <code>{{field}}</code>
+                              ({{type}})
+                              {{#if required}}
+                                <span class="label label-danger">Required</span>
+                              {{/if}}
+                              {{#if unique}}
+                                <span class="label label-info">Unique</span>
+                              {{/if}}
+                              <strong>{{description}}</strong>
+                            
+                              {{#if hasNested}}
+                                <br><br><strong>Nested type:</strong> ({{nested.type}})<br>
+                                <ul class="list-group">
+                                  {{#each nested.list}}
+                                    <li class="list-group-item">
+                                      <code>{{field}}</code>
+                                      ({{type}})
+                                      {{#if required}}
+                                        <span class="label label-danger">Required</span>
+                                      {{/if}}
+                                      {{#if unique}}
+                                        <span class="label label-info">Unique</span>
+                                      {{/if}}
+                                      <strong>{{description}}</strong>
+                                    </li>
+                                  {{/each}}
+                                </ul>
+                              {{/if}}
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+</div>

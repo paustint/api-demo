@@ -1,0 +1,42 @@
+<p class="lead" style="padding-top: 10px; padding-bottom: 10px">
+    {{{endpoints.heading}}}
+</p>
+<!--Customer API-->
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    {{#each endpoints.endpoints}}
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#{{id}}" aria-expanded="true" aria-controls="{{id}}">
+                    <h3 class="panel-title">{{title}}</h3>
+                </a>
+            </div>
+            <div id="{{id}}" class="panel-collapse collapse in" role="tabpanel">
+                <div class="panel-body">
+                    <ul class="list-group">
+                        {{#each list}}
+                            <li class="list-group-item">
+                                <span class="label label-{{label}}">{{method}}</span><strong> {{endpoint}}</strong>
+                                {{#if query}}
+                                    <br>Query Parameters:<br>
+                                    {{#each query}}
+                                        <code>{{name}}</code> <strong>({{type}})</strong> {{description}}<br>
+                                    {{/each}}
+                                {{/if}}
+                                {{#if validFields}}
+                                    <br>Valid PUT Fields:<br>
+                                    <code>{{validFields}}</code>,
+                                {{/if}}
+                                {{#if payload}}
+                                    <br>Payload Example:<br>
+<pre>
+{{payload}}
+</pre>
+                                {{/if}}
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+</div>

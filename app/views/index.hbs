@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  {{>head}}
+
+  <body>
+    <!--nav-->
+    {{>nav}}
+    <!--jumbotron-->
+    {{>jumbotron}}
+    <!--actual contents-->
+    <div class="container">
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#endpoints" aria-controls="endpoints" role="tab" data-toggle="tab">Endpoints</a></li>
+            <li role="presentation"><a href="#data-models" aria-controls="data-models" role="tab" data-toggle="tab">Data Models</a></li>
+            <li role="presentation"><a href="#other-info" aria-controls="other-info" role="tab" data-toggle="tab">Other Information</a></li>
+        </ul>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="endpoints">
+{{>endpoints}}
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="data-models">
+{{>dataModels}}
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="other-info">
+{{>otherInfo}}
+        </div>
+      </div>
+    </div><!-- /.container -->
+
+
+    {{>footjs}}
+  </body>
+</html>

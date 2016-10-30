@@ -17,6 +17,7 @@ var apiLogSchema = new mongoose.Schema({
   startTime: Date,
   stopTime: Date,
   duration: Number,
+  user: String,
 }, schemaOptions);
 
 module.exports = mongoose.model('ApiLog', apiLogSchema);

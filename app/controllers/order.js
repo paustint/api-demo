@@ -25,7 +25,7 @@ var sendJson = function(res, status, content) {
 };
 
 exports.getOrders = function(req, res) {
-  getOrders({}, req.query.full, req.params.user)
+  getOrders({}, req.query.full, req.params.user, req.query.limit, req.query.page)
   .then(results => {
     sendJson(res, 200, results);
   })
@@ -131,15 +131,30 @@ function getOrderById(id, populateSubDocs, user) {
   })
 }
 
-function getOrders(query, populateSubDocs, user) {
+function getOrders(query, populateSubDocs, user, limit, page) {
+  page = page || 0;
+  page = parseInt(page);
+  limit = limit || 100;
+  limit = parseInt(limit);
   query = query || {};
   if (user) query.user = user;
   return new Promise((resolve, reject) => {
-    var q = Order.find(query);
-    q = populate(q, populateSubDocs);
-    q.exec((err, results) => {
+    Order.find(query)
+    .populate(populateSubDocs)
+    .limit(limit)
+    .skip(limit * page)
+    .sort({createdAt: 'asc'})
+    .exec((err, results) => {
       if (err) return reject({error: err.message});
-      resolve(results);
+      Order.count(query).exec((err, count) => {
+        var pagination;
+        if (err) {
+          pagination = {error: 'Could not calculate pagination', err: err};
+        } else {
+          pagination = {page: page, limit: limit, pageCount: Math.ceil(count / limit), total: count};
+        }
+        resolve({results: results, pagination: pagination});
+      });
     });
   });
 }

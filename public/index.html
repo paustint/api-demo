@@ -53,7 +53,7 @@
             <p class="lead">
                 Reference material for API workshop.<br>
                 <strong>Author:</strong> Austin Turner - <a href="mailto:austin.turner@atginfo.com">austin.turner@atginfo.com</a><br>
-                <strong>Updated:</strong> 2016-10-28<br>
+                <strong>Updated:</strong> 2016-10-29<br>
             </p>
         </div>
     </div>
@@ -63,6 +63,7 @@
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#Endpoints" aria-controls="Endpoints" role="tab" data-toggle="tab">Endpoints</a></li>
             <li role="presentation"><a href="#Models" aria-controls="Models" role="tab" data-toggle="tab">Data Models</a></li>
+            <li role="presentation"><a href="#Other-Information" aria-controls="Other-Information" role="tab" data-toggle="tab">Other Information</a></li>
         </ul>
 
   <!-- Tab panes -->
@@ -91,6 +92,9 @@
                     <ul class="list-group">
                         <li class="list-group-item">
                             <span class="label label-success">GET</span><strong> /api/{name}/customer</strong>
+                            <br>Query Parameters:<br> 
+                            <code>limit</code> <strong>(integer)</strong> Number of records to return, defaults to 100 if not provided.<br>
+                            <code>page</code> <strong>(integer)</strong> Page number to return, defaults to 0 if not provided<br>
                         </li>
                         <li class="list-group-item">
                             <span class="label label-success">GET</span> <strong>/api/{name}/customer/{id}</strong>
@@ -137,6 +141,9 @@
                     <ul class="list-group">
                         <li class="list-group-item">
                             <span class="label label-success">GET</span><strong> /api/{name}/product</strong>
+                            <br>Query Parameters:<br> 
+                            <code>limit</code> <strong>(integer)</strong> Number of records to return, defaults to 100 if not provided.<br>
+                            <code>page</code> <strong>(integer)</strong> Page number to return, defaults to 0 if not provided<br>
                         </li>
                         <li class="list-group-item">
                             <span class="label label-success">GET</span> <strong>/api/{name}/product/{id}</strong>
@@ -177,8 +184,8 @@
 
 
 
-<!--ORder API-->
-<div class="panel panel-default">
+<!--Order API-->
+            <div class="panel panel-default">
                 <div class="panel-heading" role="tab">
                     <a role="button" data-toggle="collapse" data-parent="#accordion" href="#order-endpoints" aria-expanded="true" aria-controls="order-endpoints">
                         <h3 class="panel-title">Order</h3>
@@ -188,17 +195,19 @@
                 <div class="panel-body">
                     <ul class="list-group">
                         <li class="list-group-item">
-                            <span class="label label-success">GET</span><strong> /api/{name}/product</strong>
+                            <span class="label label-success">GET</span><strong> /api/{name}/order</strong>
                             <br>Query Parameters:<br> 
-                            <code>full=true</code> returns full product information if true
+                            <code>full</code> <strong>(boolean)</strong> returns full product information if true<br>
+                            <code>limit</code> <strong>(integer)</strong> Number of records to return, defaults to 100 if not provided.<br>
+                            <code>page</code> <strong>(integer)</strong> Page number to return, defaults to 0 if not provided<br>
                         </li>
                         <li class="list-group-item">
-                            <span class="label label-success">GET</span> <strong>/api/{name}/product/{id}</strong>
+                            <span class="label label-success">GET</span> <strong>/api/{name}/order/{id}</strong>
                             <br>Query Parameters:<br> 
-                            <code>full=true</code> returns full product information if true
+                            <code>full</code> returns full product information if true
                         </li>
                         <li class="list-group-item">
-                            <span class="label label-info">POST</span> <strong>/api/{name}/product</strong>
+                            <span class="label label-info">POST</span> <strong>/api/{name}/order</strong>
                             <br>Payload Example:<br>               
 <pre>{
   "customer": "5806e2a1759fd9ad7a1f60eb",
@@ -233,6 +242,29 @@
                 </div>
             </div> 
             <!--End order-->
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#apiLog-endpoints" aria-expanded="true" aria-controls="apiLog-endpoints">
+                        <h3 class="panel-title">Api Log</h3>
+                    </a>
+                </div>
+                <div id="apiLog-endpoints" class="panel-collapse collapse in" role="tabpanel">
+                <div class="panel-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <span class="label label-success">GET</span><strong> /api/{name}/apiLog</strong>
+                            <br>Query Parameters:<br> 
+                            <code>limit</code> <strong>(integer)</strong> Number of records to return, defaults to 100 if not provided.<br>
+                            <code>page</code> <strong>(integer)</strong> Page number to return, defaults to 0 if not provided<br>
+                        </li>
+                    </ul>
+                    
+                    </div>
+                </div>
+            </div>
+            <!-- End Api Logs -->
+
         </div>
 
     </div>
@@ -322,10 +354,71 @@ user: String (set by {name} parameter)
                 </div>
             </div>
 
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#api-log-model" aria-expanded="true" aria-controls="api-log-model">
+                        <h3 class="panel-title">Api Log</h3>
+                    </a>
+                </div>
+                <div id="api-log-model" class="panel-collapse collapse in" role="tabpanel">
+                    <div class="panel-body">              
+<pre>baseUrl: String
+url: String
+httpMethod: String
+headers: Object
+params: Object
+body: Object
+query: Object
+responseStatus: String
+callingIp: String
+startTime: Date
+stopTime: Date
+duration: Number
+user: String
+</pre>
+                    
+                    </div>
+                </div>
+            </div>
+
 </div>
 
 
     </div>
+
+
+<div role="tabpanel" class="tab-pane" id="Other-Information">
+
+        <!--        Other      -->
+
+        <p class="lead">
+            Miscellaneous information lives on this page
+        </p>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#postman-collection" aria-expanded="true" aria-controls="postman-collection">
+                        <h3 class="panel-title">Postman Collection</h3>
+                    </a>
+                </div>
+                <div id="postman-collection" class="panel-collapse collapse in" role="tabpanel">
+                    <div class="panel-body">
+                        <p>
+                            The following is a postman collection that will be imported mid-way in the training course.<br>
+                            If you are a member of the shared postman for teams, you can access this on the team section within postman.<br>
+                            <a href="https://www.getpostman.com/collections/e39ccc42af65e3927ce9"> 
+                                Postman Collection<Br>
+                                https://www.getpostman.com/collections/e39ccc42af65e3927ce9
+                            </a>
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end other tab -->
+
   </div>
       </div>
     </div><!-- /.container -->

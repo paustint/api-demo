@@ -23,12 +23,12 @@ var responseHelper = require('../services/responseHelper');
 // };
 
 exports.getCustomers = function(req, res) {
-  getCustomers(null, req.params.user)
+  getCustomers(null, req.params.user, req.query.limit, req.query.page)
   .then(results => {
     responseHelper.sendJson(req, res, 200, results);
   })
   .catch(err => {
-    responseHelper.sendJson(req, res, 400, results);
+    responseHelper.sendJson(req, res, 400);
   });
 }
 
@@ -40,7 +40,7 @@ exports.getCustomer = function(req, res) {
     responseHelper.sendJson(req, res, 200, results);
   })
   .catch(err => {
-    responseHelper.sendJson(req, res, 400, results);
+    responseHelper.sendJson(req, res, 400);
   });
 }
 
@@ -117,13 +117,29 @@ function getCustomerById(id, user) {
   })
 }
 
-function getCustomers(query, user) {
+function getCustomers(query, user, limit, page) {
+  page = page || 0;
+  page = parseInt(page);
+  limit = limit || 100;
+  limit = parseInt(limit);
   query = query || {};
   if (user) query.user = user;
   return new Promise((resolve, reject) => {
-    Customer.find(query, (err, results) => {
+    Customer.find(query)
+    .limit(limit)
+    .skip(limit * page)
+    .sort({createdAt: 'asc'})
+    .exec((err, results) => {
       if (err) return reject({error: err.message});
-      resolve(results);
+      Customer.count(query).exec((err, count) => {
+        var pagination;
+        if (err) {
+          pagination = {error: 'Could not calculate pagination', err: err};
+        } else {
+          pagination = {page: page, limit: limit, pageCount: Math.ceil(count / limit), total: count};
+        }
+        resolve({results: results, pagination: pagination});
+      });
     });
   })
 }

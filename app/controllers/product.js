@@ -23,7 +23,7 @@ var sendJson = function(res, status, content) {
 };
 
 exports.getProducts = function(req, res) {
-  getProducts(null, req.params.user)
+  getProducts(null, req.params.user, req.query.limit, req.query.page)
   .then(results => {
     sendJson(res, 200, results);
   })
@@ -122,13 +122,29 @@ function getProductById(id, user) {
   })
 }
 
-function getProducts(query, user) {
+function getProducts(query, user, limit, page) {
+  page = page || 0;
+  page = parseInt(page);
+  limit = limit || 100;
+  limit = parseInt(limit);
   query = query || {};
   if (user) query.user = user;
   return new Promise((resolve, reject) => {
-    Product.find(query, (err, results) => {
+    Product.find(query)
+    .limit(limit)
+    .skip(limit * page)
+    .sort({createdAt: 'asc'})
+    .exec((err, results) => {
       if (err) return reject({error: err.message});
-      resolve(results);
+      Product.count(query).exec((err, count) => {
+        var pagination;
+        if (err) {
+          pagination = {error: 'Could not calculate pagination', err: err};
+        } else {
+          pagination = {page: page, limit: limit, pageCount: Math.ceil(count / limit), total: count};
+        }
+        resolve({results: results, pagination: pagination});
+      });
     });
   })
 }

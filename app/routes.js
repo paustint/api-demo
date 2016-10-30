@@ -20,7 +20,6 @@ router.use(function (req, res, next) {
   apiLog.url = req.originalUrl;
   apiLog.headers = req.headers;
   apiLog.httpMethod = req.method;
-  apiLog.params = req.params;
   apiLog.body = req.body;
   apiLog.query = req.query;
   apiLog.callingIp = req.connection.remoteAddress;

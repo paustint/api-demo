@@ -16,11 +16,13 @@
     function saveApiLog(req, status) {
       try {
         if (req.apiLog) {
-          req.apiLog.stopTime = Date.now();
-          if (req.apiLog.startTime) {
-            req.apiLog.duration = req.apiLog.stopTime - req.apiLog.startTime;
-          }
+          if (req.params.user) req.apiLog.user = req.params.user;
+          req.apiLog.params = req.params;
           req.apiLog.responseStatus = status;
+          
+          req.apiLog.stopTime = Date.now();
+          if (req.apiLog.startTime) req.apiLog.duration = req.apiLog.stopTime - req.apiLog.startTime;
+
           req.apiLog.save((err) => {
             if (err) console.log('error saving apiLog');
             console.log('saved API log');

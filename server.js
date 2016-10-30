@@ -57,16 +57,31 @@ app.use('/api', api);
 
 app.use(function(req, res, next) {
   res.status(404);
-  res.send({error: `Path '${req.url}' is not found` })
+  if(req.baseUrl === '/api') {
+    res.json({error: `Path '${req.url}' is not found` });
+  } else {
+    res.render('404', {
+      path: req.url
+    });
+  }
+  
 });
 
-// app.use(function(err, req, res, next) {
-//   res.status(err.status || 500);
-//   res.render('error', {
-//     message: err.message,
-//     error: err
-//   });
-// });
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  if(req.baseUrl === '/api') {
+    res.json({
+      error: 'There was a server error processing your request',
+      systemErr: err
+    });
+  } else {
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  }
+
+});
 
 var server = app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));

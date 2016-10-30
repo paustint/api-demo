@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  {{>head}}
+
+  <body>
+    <!--nav-->
+    {{>nav}}
+    <!--actual contents-->
+    <div class="container">
+      <img src="/images/error.jpg" alt="Server error">
+      <p>
+        {{message}}
+      </p>
+      <p>
+        <h4>Technical mumbo jumbo</h4>
+<pre>{{error}}</pre>
+      </p>
+    </div><!-- /.container -->
+    {{>footjs}}
+  </body>
+</html>

@@ -1,7 +1,7 @@
 var moment = require('moment');
 var expressValidator = require('express-validator');
 
-var ApiLog = require('../models/ApiLog');
+var ApiLog = require('../models/apiLog');
 var responseHelper = require('../services/responseHelper');
 /**
  * 200 - OK success GET

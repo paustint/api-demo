@@ -395,6 +395,7 @@ user: String
             Miscellaneous information lives on this page
         </p>
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab">
                     <a role="button" data-toggle="collapse" data-parent="#accordion" href="#postman-collection" aria-expanded="true" aria-controls="postman-collection">
@@ -415,6 +416,25 @@ user: String
                     </div>
                 </div>
             </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#postman-environment" aria-expanded="true" aria-controls="postman-environment">
+                        <h3 class="panel-title">Postman Environment</h3>
+                    </a>
+                </div>
+                <div id="postman-environment" class="panel-collapse collapse in" role="tabpanel">
+                    <div class="panel-body">
+                        <p>
+                            Setup a new environment in postmant and you can paste in the following to the <code>Bulk Edit</code> section, make sure to put in a unique value for the user parameter<br>
+<pre>url:https://atg-api-demo.herokuapp.com/
+user:uniqueNameHere</pre>
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     <!-- end other tab -->

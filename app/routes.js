@@ -4,7 +4,7 @@
   var express = require('express');
   var router = express.Router();
   // Models
-  var ApiLog = require('./models/ApiLog');
+  var ApiLog = require('./models/apiLog');
 
   // Controllers
   var CustomerController = require('./controllers/customer');

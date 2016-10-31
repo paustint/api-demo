@@ -23,7 +23,20 @@
                           Postman Collection<Br>
                           https://www.getpostman.com/collections/e39ccc42af65e3927ce9
                       </a>
-                    </p>`
+                    </p><br><br>
+                    <div class="postman-run-button"
+                      data-postman-action="collection/import"
+                      data-postman-var-1="e39ccc42af65e3927ce9"
+                      data-postman-param="env%5BAPI%20Demo%5D=W3sia2V5IjoidXJsIiwidHlwZSI6InRleHQiLCJ2YWx1ZSI6Imh0dHBzOi8vYXRnLWFwaS1kZW1vLmhlcm9rdWFwcC5jb20vIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ1c2VyIiwidHlwZSI6InRleHQiLCJ2YWx1ZSI6ImF1c3RpbiIsImVuYWJsZWQiOnRydWV9XQ=="></div>
+                      <script type="text/javascript">
+                        (function (p,o,s,t,m,a,n) {
+                          !p[s] && (p[s] = function () { (p[t] || (p[t] = [])).push(arguments); });
+                          !o.getElementById(s+t) && o.getElementsByTagName("head")[0].appendChild((
+                            (n = o.createElement("script")),
+                            (n.id = s+t), (n.async = 1), (n.src = m), n
+                          ));
+                        }(window, document, "_pm", "PostmanRunObject", "https://run.pstmn.io/button.js"));
+                      </script>`
         },
         {
           title: 'Postman Environment',

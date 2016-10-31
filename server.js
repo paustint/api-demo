@@ -67,12 +67,13 @@ app.use(function(req, res, next) {
   
 });
 
+// Catch all server errors
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  if(req.baseUrl === '/api') {
+  if(req.baseUrl === '/api' || req.originalUrl.includes('/api/')) {
     res.json({
       error: 'There was a server error processing your request',
-      systemErr: err
+      message: err.message
     });
   } else {
     res.render('error', {
